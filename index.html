@@ -1,218 +1,795 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
-  <title>Anggiyasti - Senior Software Engineer</title>
+  <title>Anggiyasti — Fullstack Engineer</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
   <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── DARK THEME (default) ── */
+    [data-theme="dark"] {
+      --bg:           #080B10;
+      --bg-nav:       rgba(8,11,16,0.75);
+      --surface:      #0E1218;
+      --surface2:     #141920;
+      --border:       rgba(255,255,255,0.06);
+      --border2:      rgba(255,255,255,0.11);
+      --text:         #E2E8F0;
+      --muted:        #64748B;
+      --subtle:       #94A3B8;
+      --heading:      #ffffff;
+      --accent:       #6366F1;
+      --accent2:      #818CF8;
+      --green:        #34D399;
+      --green-bg:     rgba(52,211,153,0.08);
+      --green-border: rgba(52,211,153,0.2);
+      --toggle-bg:    #1e2330;
+      --toggle-icon:  #94A3B8;
+    }
+
+    /* ── LIGHT THEME ── */
+    [data-theme="light"] {
+      --bg:           #F8FAFC;
+      --bg-nav:       rgba(248,250,252,0.85);
+      --surface:      #FFFFFF;
+      --surface2:     #F1F5F9;
+      --border:       rgba(0,0,0,0.07);
+      --border2:      rgba(0,0,0,0.12);
+      --text:         #1E293B;
+      --muted:        #94A3B8;
+      --subtle:       #475569;
+      --heading:      #0F172A;
+      --accent:       #4F46E5;
+      --accent2:      #6366F1;
+      --green:        #059669;
+      --green-bg:     rgba(5,150,105,0.07);
+      --green-border: rgba(5,150,105,0.2);
+      --toggle-bg:    #E2E8F0;
+      --toggle-icon:  #475569;
+    }
+
     html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    /* noise only in dark */
+    [data-theme="dark"] body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      height: 64px;
+      background: var(--bg-nav);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      transition: background 0.3s, border-color 0.3s;
+    }
+
+    .nav-left { display: flex; align-items: center; gap: 24px; }
+
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 17px;
+      color: var(--heading);
+      letter-spacing: -0.3px;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 28px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    /* ── THEME TOGGLE ── */
+    .theme-toggle {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: var(--toggle-bg);
+      border: 1px solid var(--border2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--toggle-icon);
+      transition: background 0.3s, border-color 0.3s, color 0.2s;
+      flex-shrink: 0;
+    }
+    .theme-toggle:hover { color: var(--accent2); border-color: var(--accent); }
+    .theme-toggle svg { width: 16px; height: 16px; }
+    .icon-sun { display: none; }
+    .icon-moon { display: block; }
+    [data-theme="light"] .icon-sun { display: block; }
+    [data-theme="light"] .icon-moon { display: none; }
+
+    /* ── LAYOUT ── */
+    .wrap {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 32px;
+      position: relative;
+      z-index: 1;
+    }
+
+    section { padding: 96px 0; }
+
+    /* ── HERO ── */
+    .hero { padding-top: 160px; padding-bottom: 80px; }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(42px, 6vw, 72px);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -2px;
+      color: var(--heading);
+      margin-bottom: 24px;
+      transition: color 0.3s;
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--accent2) 0%, #A78BFA 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-desc {
+      max-width: 520px;
+      color: var(--subtle);
+      font-size: 16px;
+      line-height: 1.75;
+      margin-bottom: 40px;
+      transition: color 0.3s;
+    }
+
+    .hero-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--accent); color: #fff;
+      padding: 12px 24px; border-radius: 8px;
+      text-decoration: none; font-size: 13px; font-weight: 600;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-primary:hover { background: var(--accent2); transform: translateY(-1px); }
+
+    .btn-outline {
+      display: inline-flex; align-items: center; gap: 8px;
+      border: 1px solid var(--border2); color: var(--subtle);
+      padding: 12px 24px; border-radius: 8px;
+      text-decoration: none; font-size: 13px; font-weight: 500;
+      transition: border-color 0.2s, color 0.2s, transform 0.15s;
+    }
+    .btn-outline:hover { border-color: var(--accent); color: var(--text); transform: translateY(-1px); }
+
+    /* ── STATS ── */
+    .stats { padding: 40px 0 80px; }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .stat { background: var(--surface); padding: 28px 24px; transition: background 0.3s; }
+    .stat-value {
+      font-family: 'Syne', sans-serif;
+      font-size: 28px; font-weight: 800;
+      color: var(--heading); letter-spacing: -1px;
+      line-height: 1; margin-bottom: 6px;
+      transition: color 0.3s;
+    }
+    .stat-value span { color: var(--accent2); }
+    .stat-label { font-size: 12px; color: var(--muted); font-weight: 500; letter-spacing: 0.04em; transition: color 0.3s; }
+
+    /* ── SECTION HEADER ── */
+    .section-label {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--accent2); margin-bottom: 16px;
+    }
+    .section-label::before { content: ''; display: block; width: 16px; height: 1px; background: var(--accent2); }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(24px, 3vw, 32px); font-weight: 700;
+      letter-spacing: -0.8px; color: var(--heading);
+      margin-bottom: 12px; transition: color 0.3s;
+    }
+
+    .section-sub { color: var(--muted); font-size: 14px; max-width: 480px; margin-bottom: 48px; transition: color 0.3s; }
+
+    /* ── ABOUT ── */
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+    .about-text p { color: var(--subtle); font-size: 15px; line-height: 1.8; margin-bottom: 16px; transition: color 0.3s; }
+    .about-text p:last-child { margin-bottom: 0; }
+
+    .tech-list {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 12px; padding: 24px;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .tech-list h4 { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+    .tech-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+    .tech-tag {
+      font-size: 12px; font-weight: 500; color: var(--subtle);
+      background: var(--surface2); border: 1px solid var(--border);
+      padding: 5px 12px; border-radius: 6px;
+      transition: border-color 0.2s, color 0.2s, background 0.3s;
+    }
+    .tech-tag:hover { border-color: var(--accent); color: var(--accent2); }
+
+    /* ── PROJECTS ── */
+    .projects-grid { display: grid; gap: 20px; }
+
+    /* FEATURED */
+    .project-featured {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; overflow: hidden;
+      transition: border-color 0.25s, background 0.3s;
+    }
+    .project-featured:hover { border-color: var(--border2); }
+
+    .project-img {
+      background: var(--surface2); aspect-ratio: 16/10; overflow: hidden; position: relative;
+      transition: background 0.3s;
+    }
+    .project-img img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.4s ease; }
+    .project-featured:hover .project-img img,
+    .project-card:hover .project-img img { transform: scale(1.04); }
+
+    .project-body { padding: 36px; display: flex; flex-direction: column; justify-content: center; }
+
+    .project-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+      padding: 4px 10px; border-radius: 4px; margin-bottom: 20px; width: fit-content;
+    }
+    .badge-core { color: var(--accent2); background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.2); }
+    .badge-freelance { color: var(--green); background: var(--green-bg); border: 1px solid var(--green-border); }
+    .badge-edtech { color: #F59E0B; background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2); }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .badge-core .badge-dot { background: var(--accent2); }
+    .badge-freelance .badge-dot { background: var(--green); }
+    .badge-edtech .badge-dot { background: #F59E0B; }
+
+    .project-title {
+      font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 700;
+      letter-spacing: -0.4px; color: var(--heading); margin-bottom: 10px; transition: color 0.3s;
+    }
+    .project-desc { font-size: 14px; color: var(--subtle); line-height: 1.7; margin-bottom: 20px; transition: color 0.3s; }
+
+    .project-stack { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+    .stack-tag {
+      font-size: 11px; font-weight: 500; color: var(--muted);
+      background: var(--surface2); border: 1px solid var(--border);
+      padding: 3px 9px; border-radius: 4px; transition: background 0.3s, border-color 0.3s, color 0.3s;
+    }
+
+    .project-points { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .project-points li { font-size: 13px; color: var(--muted); display: flex; align-items: flex-start; gap: 8px; transition: color 0.3s; }
+    .project-points li::before { content: '→'; color: var(--accent2); flex-shrink: 0; margin-top: 1px; }
+
+    /* SMALL CARDS */
+    .projects-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+    .project-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden;
+      transition: border-color 0.25s, transform 0.2s, background 0.3s;
+    }
+    .project-card:hover { border-color: var(--border2); transform: translateY(-2px); }
+    .project-card .project-img { aspect-ratio: 16/9; }
+    .project-card .project-body { padding: 20px; }
+    .project-card .project-title { font-size: 15px; margin-bottom: 8px; }
+    .project-card .project-desc { font-size: 13px; margin-bottom: 14px; }
+
+    /* ── DIVIDER ── */
+    .divider { height: 1px; background: var(--border); transition: background 0.3s; }
+
+    /* ── CONTACT ── */
+    .contact-wrap { max-width: 560px; }
+    .contact-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 16px; padding: 40px; margin-top: 8px;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .contact-intro { color: var(--subtle); font-size: 15px; line-height: 1.75; margin-bottom: 32px; transition: color 0.3s; }
+    .contact-items { display: flex; flex-direction: column; gap: 14px; }
+    .contact-item { display: flex; align-items: center; gap: 14px; }
+    .contact-icon {
+      width: 36px; height: 36px; background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      transition: background 0.3s, border-color 0.3s;
+    }
+    .contact-icon svg { width: 16px; height: 16px; color: var(--accent2); }
+    .contact-label { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); margin-bottom: 1px; }
+    .contact-value { font-size: 14px; color: var(--subtle); transition: color 0.3s; }
+    .contact-value a { color: inherit; text-decoration: none; transition: color 0.2s; }
+    .contact-value a:hover { color: var(--accent2); }
+
+    /* ── FOOTER ── */
+    footer { border-top: 1px solid var(--border); padding: 28px 0; position: relative; z-index: 1; transition: border-color 0.3s; }
+    .footer-inner {
+      max-width: 960px; margin: 0 auto; padding: 0 32px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .footer-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; color: var(--muted); }
+    .footer-copy { font-size: 12px; color: var(--muted); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 0 20px; }
+      .wrap { padding: 0 20px; }
+      section { padding: 64px 0; }
+      .hero { padding-top: 120px; padding-bottom: 40px; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .about-grid { grid-template-columns: 1fr; gap: 32px; }
+      .project-featured { grid-template-columns: 1fr; }
+      .project-featured .project-img { aspect-ratio: 16/8; }
+      .projects-row { grid-template-columns: 1fr; }
+      .footer-inner { flex-direction: column; gap: 8px; text-align: center; }
+    }
   </style>
 </head>
 
-<body class="bg-gradient-to-br from-gray-950 via-gray-900 to-black text-gray-200">
+<body>
 
-<!-- NAVBAR -->
-<nav class="fixed top-0 w-full backdrop-blur bg-black/40 border-b border-gray-800 z-50">
-  <div class="max-w-5xl mx-auto px-6 py-4 flex justify-between">
-    <h1 class="text-white font-semibold">Anggiyasti</h1>
-    <div class="space-x-6 text-sm text-gray-400">
-      <a href="#about" class="hover:text-white">About</a>
-      <a href="#projects" class="hover:text-white">Projects</a>
-      <a href="#contact" class="hover:text-white">Contact</a>
-    </div>
+<!-- NAV -->
+<nav>
+  <div class="nav-left">
+    <a href="#" class="nav-logo">Anggiyasti</a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
   </div>
+  <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+    <!-- sun icon (shown in light mode) -->
+    <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/>
+      <line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/>
+      <line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+    </svg>
+    <!-- moon icon (shown in dark mode) -->
+    <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+    </svg>
+  </button>
 </nav>
 
-<div class="max-w-5xl mx-auto px-6 pt-32 pb-20">
+<div class="wrap">
 
-<!-- HERO -->
-<section class="mb-20">
-  <h1 class="text-5xl md:text-6xl font-bold text-white mb-6">
-    Senior Software Engineer
-  </h1>
-
-  <p class="text-gray-400 max-w-xl text-lg mb-8">
-    8+ years of experience building scalable backend systems, APIs, and microservices
-    across logistics and business platforms.
-  </p>
-
-  <div class="flex gap-4">
-    <a href="#projects" class="bg-indigo-500 hover:bg-indigo-600 px-6 py-3 rounded-xl text-sm">
-      View Projects
-    </a>
-
-    <a href="assets/CV_Anggiyasti_Yaktining_Putri.pdf" target="_blank"
-      class="border border-gray-700 px-6 py-3 rounded-xl text-sm">
-      Download CV
-    </a>
-  </div>
-</section>
-
-<!-- IMPACT -->
-<section class="mb-20">
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-
-    <div>
-      <h3 class="text-3xl font-bold text-indigo-400">8+</h3>
-      <p class="text-gray-400 text-sm">Years Experience</p>
-    </div>
-
-    <div>
-      <h3 class="text-3xl font-bold text-indigo-400">20–30%</h3>
-      <p class="text-gray-400 text-sm">Performance Boost</p>
-    </div>
-
-    <div>
-      <h3 class="text-3xl font-bold text-indigo-400">10+</h3>
-      <p class="text-gray-400 text-sm">Systems Built</p>
-    </div>
-
-    <div>
-      <h3 class="text-3xl font-bold text-indigo-400">AWS</h3>
-      <p class="text-gray-400 text-sm">Cloud Deployment</p>
-    </div>
-
-  </div>
-</section>
-
-<!-- ABOUT -->
-<section id="about" class="mb-20">
-  <h2 class="text-2xl font-semibold text-white mb-6">About</h2>
-
-  <p class="text-gray-400 max-w-3xl mb-4">
-    Backend-focused engineer specializing in scalable systems, REST APIs, and microservices architecture.
-    Experienced in building high-performance applications across logistics and business domains.
-  </p>
-
-  <p class="text-gray-500 text-sm">
-    Node.js (NestJS) · ReactJS · VueJS · Laravel · MySQL · MongoDB · Redis · AWS · DigitalOcean
-  </p>
-</section>
-
-<!-- PROJECTS -->
-<section id="projects" class="mb-24">
-  <h2 class="text-2xl font-semibold text-white mb-4">Projects</h2>
-
-  <p class="text-gray-500 mb-10 max-w-2xl">
-    Selected work focused on scalability, performance, and real-world business impact.
-  </p>
-
-  <div class="space-y-8">
-
-    <!-- ANDALIN SHIPPING -->
-    <div class="bg-gray-900 border border-gray-800 p-6 rounded-xl">
-      <span class="text-xs bg-indigo-500/20 text-indigo-400 px-3 py-1 rounded-full">Core Project</span>
-
-      <h3 class="text-lg text-indigo-400 font-semibold mt-3 mb-2">
-        Andalin Shipping Platform
-      </h3>
-
-      <p class="text-gray-400 mb-3 text-sm">
-        Freight-forwarding platform for international shipment operations and quotation workflows.
-      </p>
-
-      <div class="text-xs text-gray-500 mb-3">
-        Node.js · NestJS · ReactJS · VueJS · MySQL · Redis · AWS
-      </div>
-
-      <ul class="text-sm text-gray-500 space-y-1">
-        <li>• Designed scalable REST APIs</li>
-        <li>• Optimized queries & indexing</li>
-        <li>• Improved performance by 20–30%</li>
-      </ul>
-    </div>
-
-    <!-- SYNCARGO -->
-    <div class="bg-gray-900 border border-gray-800 p-6 rounded-xl">
-      <span class="text-xs bg-indigo-500/20 text-indigo-400 px-3 py-1 rounded-full">Core Project</span>
-
-      <h3 class="text-lg text-indigo-400 font-semibold mt-3 mb-2">
-        Syncargo (SaaS Platform)
-      </h3>
-
-      <p class="text-gray-400 mb-3 text-sm">
-        SaaS logistics system handling document workflows, tracking, and automation.
-      </p>
-
-      <div class="text-xs text-gray-500 mb-3">
-        Node.js · NestJs · NuxtJS · Microservices · MongoDB · Redis · DigitalOcean
-      </div>
-
-      <ul class="text-sm text-gray-500 space-y-1">
-        <li>• Built microservices architecture</li>
-        <li>• Implemented Redis caching</li>
-        <li>• Deployed to cloud infrastructure</li>
-      </ul>
-    </div>
-
-    <!-- ANDALIN TRADE -->
-    <div class="bg-gray-900 border border-gray-800 p-6 rounded-xl">
-      <span class="text-xs bg-indigo-500/20 text-indigo-400 px-3 py-1 rounded-full">Core Project</span>
-
-      <h3 class="text-lg text-indigo-400 font-semibold mt-3 mb-2">
-        Andalin Trade
-      </h3>
-
-      <p class="text-gray-400 mb-3 text-sm">
-        Procurement and supplier onboarding platform integrated with accounting systems.
-      </p>
-
-      <div class="text-xs text-gray-500 mb-3">
-        Node.js · API Integration · MySQL
-      </div>
-
-      <ul class="text-sm text-gray-500 space-y-1">
-        <li>• Built supplier onboarding APIs</li>
-        <li>• Integrated Xero accounting</li>
-        <li>• Improved data workflows</li>
-      </ul>
-    </div>
-
-    <!-- FREELANCE -->
-    <div class="bg-gray-900 border border-gray-800 p-6 rounded-xl">
-      <span class="text-xs bg-emerald-500/20 text-emerald-400 px-3 py-1 rounded-full">Freelance</span>
-
-      <h3 class="text-lg text-emerald-400 font-semibold mt-3 mb-2">
-        Business Platform (Client)
-      </h3>
-
-      <p class="text-gray-400 mb-3 text-sm">
-        Custom backend system for business workflow automation and integrations.
-      </p>
-
-      <div class="text-xs text-gray-500 mb-3">
-        Laravel · MySQL · API · Payment Integration
-      </div>
-
-      <ul class="text-sm text-gray-500 space-y-1">
-        <li>• Built REST APIs</li>
-        <li>• Designed database schema</li>
-        <li>• Integrated payment systems</li>
-      </ul>
-    </div>
-
-  </div>
-</section>
-
-<!-- CONTACT -->
-<section id="contact">
-  <h2 class="text-2xl font-semibold text-white mb-6">Contact</h2>
-
-  <div class="bg-gray-900 border border-gray-800 p-6 rounded-xl max-w-xl">
-    <p class="text-gray-400 mb-4">
-      Open for opportunities and collaborations.
+  <!-- HERO -->
+  <section class="hero">
+    <h1>Building things<br>that <em>actually work</em></h1>
+    <p class="hero-desc">
+      Fullstack engineer with 8+ years of experience. I've spent most of that time deep in logistics and edtech, building APIs, backend services, and the frontend that ties it all together.
     </p>
+    <div class="hero-actions">
+      <a href="#projects" class="btn-primary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        View Projects
+      </a>
+      <a href="assets/CV_Anggiyasti_Yaktining_Putri.pdf" target="_blank" class="btn-outline">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download CV
+      </a>
+    </div>
+  </section>
 
-    <div class="text-sm text-gray-300 space-y-2">
-      <p>Email: putrianggiyasti@gmail.com</p>
-      <!-- <p>LinkedIn: linkedin.com/in/anggiyasti-putri</p> -->
-      <p>GitHub: github.com/anggiyasti</p>
+  <!-- STATS -->
+  <div class="stats">
+    <div class="stats-grid">
+      <div class="stat">
+        <div class="stat-value">8<span>+</span></div>
+        <div class="stat-label">Years experience</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value"><span>Full</span>stack</div>
+        <div class="stat-label">End-to-end delivery</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">10<span>+</span></div>
+        <div class="stat-label">Systems built</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">5<span>+</span></div>
+        <div class="stat-label">Countries served</div>
+      </div>
     </div>
   </div>
-</section>
 
 </div>
+
+<div class="divider"></div>
+
+<!-- ABOUT -->
+<div class="wrap">
+  <section id="about">
+    <div class="section-label">About</div>
+    <h2 class="section-title">Who I am</h2>
+    <div class="about-grid">
+      <div class="about-text">
+        <p>Over the past 8+ years, I've been building and shipping software for international logistics and edtech platforms — mostly working full-stack with Node.js, React.js, Vue.js, NestJS, and PHP (Laravel).</p>
+        <p>I like solving real problems: whether that's optimizing a slow query, designing a clean API, or working closely with product and design to get a feature just right.</p>
+        <p>I'm now freelancing and open to interesting projects where I can bring the same energy.</p>
+      </div>
+      <div class="tech-list">
+        <h4>Tech I work with</h4>
+        <div class="tech-tags">
+          <span class="tech-tag">Node.js</span>
+          <span class="tech-tag">NestJS</span>
+          <span class="tech-tag">PHP</span>
+          <span class="tech-tag">Laravel</span>
+          <span class="tech-tag">Go</span>
+          <span class="tech-tag">React.js</span>
+          <span class="tech-tag">Next.js</span>
+          <span class="tech-tag">Vue.js</span>
+          <span class="tech-tag">Nuxt.js</span>
+          <span class="tech-tag">TypeScript</span>
+          <span class="tech-tag">MySQL</span>
+          <span class="tech-tag">MongoDB</span>
+          <span class="tech-tag">Redis</span>
+          <span class="tech-tag">AWS</span>
+          <span class="tech-tag">DigitalOcean</span>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="divider"></div>
+
+<!-- PROJECTS -->
+<div class="wrap">
+  <section id="projects">
+    <div class="section-label">Work</div>
+    <h2 class="section-title">Selected projects</h2>
+    <p class="section-sub">A mix of long-term product work, freelance builds, and edtech platforms, all focused on shipping something real.</p>
+
+    <div class="projects-grid">
+
+      <!-- ═══════════════════════════════════════════
+           FEATURED: ANDALIN SHIPPING
+           To add image: uncomment the project-img block below
+           and make sure assets/images/project1.png exists
+      ════════════════════════════════════════════ -->
+      <div class="project-featured">
+        <!--
+        <div class="project-img">
+          <img src="assets/images/project1.png" alt="Andalin Shipping Platform">
+        </div>
+        -->
+        <div class="project-body" style="grid-column: span 2; padding: 40px 44px;">
+          <div class="project-badge badge-core"><span class="badge-dot"></span> Core Project</div>
+          <h3 class="project-title">Andalin Shipping Platform</h3>
+          <p class="project-desc">Digital freight forwarding platform that streamlines international shipping operations, including freight quotations, shipment visibility, customs workflows, trade documentation, and logistics partner integrations.</p>
+          <div class="project-stack">
+            <span class="stack-tag">Node.js</span>
+            <span class="stack-tag">Express.js</span>
+            <span class="stack-tag">React.js</span>
+            <span class="stack-tag">Vue.js</span>
+            <span class="stack-tag">MySQL</span>
+            <span class="stack-tag">MongoDB</span>
+            <span class="stack-tag">Redis</span>
+          </div>
+          <ul class="project-points" style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px 32px;">
+            <li>Developed and maintained core features across logistics, shipment, quotation, customs, and operational workflows</li>
+            <li>Integrated with multiple third-party services and business systems</li>
+            <li>Deployed and managed infrastructure</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- ═══════════════════════════════════════
+           ROW: SYNCARGO · ANDALIN TRADE · COMPANY PROFILE
+      ════════════════════════════════════════ -->
+      <div class="projects-row">
+
+        <!-- SYNCARGO
+             To add image: uncomment project-img block, ensure assets/images/project2.png exists -->
+        <div class="project-card">
+          <!--
+          <div class="project-img">
+            <img src="assets/images/project2.png" alt="Syncargo">
+          </div>
+          -->
+          <div class="project-body" style="padding: 24px;">
+            <div class="project-badge badge-core"><span class="badge-dot"></span> Core Project</div>
+            <h3 class="project-title">Syncargo</h3>
+            <p class="project-desc">
+            Software-as-a-Service (SaaS) platform built for freight forwarding companies to manage cargo shipments, logistics documentation, operational workflows, and customer coordination through a centralized system.
+            </p>
+            <div class="project-stack">
+              <span class="stack-tag">NestJS</span>
+              <span class="stack-tag">Nuxt.js</span>
+              <span class="stack-tag">MongoDB</span>
+              <span class="stack-tag">Redis</span>
+            </div>
+            <ul class="project-points">
+              <li>Built and maintained REST APIs supporting cargo and operational processes</li>
+              <li>Enhanced frontend functionality and resolved issues to improve user experience</li>
+          </ul>
+          </div>
+        </div>
+
+        <!-- ANDALIN TRADE
+             To add image: uncomment project-img block, ensure assets/images/project3.png exists -->
+        <div class="project-card">
+          <!--
+          <div class="project-img">
+            <img src="assets/images/project3.png" alt="Andalin Trade">
+          </div>
+          -->
+          <div class="project-body" style="padding: 24px;">
+            <div class="project-badge badge-core"><span class="badge-dot"></span> Core Project</div>
+            <h3 class="project-title">Andalin Trade</h3>
+            <p class="project-desc">B2B trade operations platform supporting supplier management, procurement processes, purchase workflows, and financial system integrations.</p>
+            <div class="project-stack">
+              <span class="stack-tag">Node.js</span>
+              <span class="stack-tag">MySQL</span>
+              <span class="stack-tag">Xero API</span>
+            </div>
+            <ul class="project-points">
+              <li>Developed and maintained REST APIs for core platform functionalities</li>
+              <li>Integrated with external third-party systems</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- COMPANY PROFILE (FREELANCE)
+             To add image: uncomment project-img block, ensure assets/images/project4.png exists -->
+        <div class="project-card">
+          <!--
+          <div class="project-img">
+            <img src="assets/images/project4.png" alt="Company Profile">
+          </div>
+          -->
+          <div class="project-body" style="padding: 24px;">
+            <div class="project-badge badge-freelance"><span class="badge-dot"></span> Freelance</div>
+            <h3 class="project-title">Company Profile</h3>
+            <p class="project-desc">Modern company profile website with CMS, responsive design, and SEO optimization.</p>
+            <div class="project-stack">
+              <span class="stack-tag">Laravel</span>
+              <span class="stack-tag">React.js</span>
+              <span class="stack-tag">MySQL</span>
+            </div>
+            <ul class="project-points">
+              <li>Built custom CMS for content management</li>
+              <li>SEO-optimized & fully responsive</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ═══════════════════════════════════════
+           ROW: GAMING TOPUP · PAYMENT GATEWAY
+      ════════════════════════════════════════ -->
+      <div class="projects-row" style="grid-template-columns: 1fr 2fr;">
+
+        <!-- GAMING TOPUP
+             To add image: uncomment project-img block, ensure assets/images/project5.png exists -->
+        <div class="project-card">
+          <!--
+          <div class="project-img">
+            <img src="assets/images/project5.png" alt="Gaming Top-up Platform">
+          </div>
+          -->
+          <div class="project-body" style="padding: 24px;">
+            <div class="project-badge badge-freelance"><span class="badge-dot"></span> Freelance</div>
+            <h3 class="project-title">Gaming Top-up Platform</h3>
+            <p class="project-desc">E-commerce platform for digital game.</p>
+            <div class="project-stack">
+              <span class="stack-tag">Laravel</span>
+              <span class="stack-tag">Node.js</span>
+              <span class="stack-tag">MySQL</span>
+            </div>
+            <ul class="project-points">
+              <li>Built product catalog & order management</li>
+              <li>Integrated multiple payment gateways</li>
+              <li>Automated instant delivery flow</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- PAYMENT GATEWAY
+             To add image: uncomment project-img block, ensure assets/images/project6.png exists -->
+        <div class="project-card">
+          <!--
+          <div class="project-img" style="aspect-ratio: 21/9;">
+            <img src="assets/images/project6.png" alt="Payment Gateway Platform">
+          </div>
+          -->
+          <div class="project-body" style="padding: 24px;">
+            <div class="project-badge badge-freelance"><span class="badge-dot"></span> Freelance</div>
+            <h3 class="project-title">Payment Gateway Platform</h3>
+            <p class="project-desc">Full-stack payment gateway supporting QR payments, multiple local providers, merchant dashboard, and RESTful API for third-party integration.</p>
+            <div class="project-stack">
+              <span class="stack-tag">Laravel</span>
+              <span class="stack-tag">Node.js</span>
+              <span class="stack-tag">React.js</span>
+              <span class="stack-tag">MySQL</span>
+            </div>
+            <ul class="project-points" style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px 24px;">
+              <li>Built RESTful API with full documentation</li>
+              <li>Integrated third-party payment providers</li>
+              <li>Merchant dashboard</li>
+              <li>QR code dynamic payment generation</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ═══════════════════════════════════════
+           ROW: EDTECH — SIBEJOO · DIGITAL LEARNING MEDIA
+      ════════════════════════════════════════ -->
+      <div class="projects-row" style="grid-template-columns: 1fr 1fr;">
+
+        <!-- SIBEJOO
+             To add image: uncomment project-img block, ensure assets/images/project7.png exists -->
+        <div class="project-card">
+          <!--
+          <div class="project-img">
+            <img src="assets/images/project7.png" alt="Sibejoo">
+          </div>
+          -->
+          <div class="project-body" style="padding: 24px;">
+            <div class="project-badge badge-edtech"><span class="badge-dot"></span> CORE PROJECT</div>
+            <h3 class="project-title">Sibejoo</h3>
+            <p class="project-desc">Free online learning platform for Indonesian students, video-based modules, interactive content, and student progress tracking built on an educational access mission.</p>
+            <div class="project-stack">
+              <span class="stack-tag">PHP</span>
+              <span class="stack-tag">CodeIgniter</span>
+              <span class="stack-tag">MySQL</span>
+            </div>
+            <ul class="project-points">
+              <li>Built video-based & interactive learning modules</li>
+              <li>Implemented student progress tracking</li>
+              <li>Collaborated with educators</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- DIGITAL LEARNING MEDIA (PT CIPTA NUR BUANA)
+             To add image: uncomment project-img block, ensure assets/images/project8.png exists -->
+        <div class="project-card">
+          <!--
+          <div class="project-img">
+            <img src="assets/images/project8.png" alt="Digital Learning Media">
+          </div>
+          -->
+          <div class="project-body" style="padding: 24px;">
+            <div class="project-badge badge-edtech"><span class="badge-dot"></span> CORE PROJECT</div>
+            <h3 class="project-title">Digital Learning Media</h3>
+            <p class="project-desc">Digital learning system for Journal Academy and Neutron Yogyakarta, video & PDF delivery, user authentication, and content management with a modular architecture.</p>
+            <div class="project-stack">
+              <span class="stack-tag">PHP</span>
+              <span class="stack-tag">CodeIgniter</span>
+              <span class="stack-tag">MySQL</span>
+            </div>
+            <ul class="project-points">
+              <li>Built content management & user auth system</li>
+              <li>Video and PDF delivery with seamless playback</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+</div>
+
+<div class="divider"></div>
+
+<!-- CONTACT -->
+<div class="wrap">
+  <section id="contact">
+    <div class="contact-wrap">
+      <div class="section-label">Contact</div>
+      <h2 class="section-title">Let's work together</h2>
+      <div class="contact-card">
+        <p class="contact-intro">Open for collaborations. If you have something interesting in mind, let's talk.</p>
+        <div class="contact-items">
+          <div class="contact-item">
+            <div class="contact-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            </div>
+            <div>
+              <div class="contact-label">Email</div>
+              <div class="contact-value"><a href="mailto:putrianggiyasti@gmail.com">putrianggiyasti@gmail.com</a></div>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+            </div>
+            <div>
+              <div class="contact-label">GitHub</div>
+              <div class="contact-value"><a href="https://github.com/anggiyasti" target="_blank">github.com/anggiyasti</a></div>
+            </div>
+          </div>
+          <div class="contact-item">
+            <div class="contact-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+            </div>
+            <div>
+              <div class="contact-label">LinkedIn</div>
+              <div class="contact-value"><a href="https://linkedin.com/in/anggiyasti-putri" target="_blank">linkedin.com/in/anggiyasti-putri</a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <span class="footer-name">Anggiyasti Yaktining Putri</span>
+    <span class="footer-copy">© 2026 · Built with care</span>
+  </div>
+</footer>
+
+<script>
+  function toggleTheme() {
+    const html = document.documentElement;
+    html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    localStorage.setItem('theme', html.getAttribute('data-theme'));
+  }
+  // Restore saved preference
+  const saved = localStorage.getItem('theme');
+  if (saved) document.documentElement.setAttribute('data-theme', saved);
+</script>
 
 </body>
 </html>
